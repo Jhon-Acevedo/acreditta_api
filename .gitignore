@@ -15,3 +15,10 @@ dist/
 build/
 *.egg-info/
 
+.idea
+.vscode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
