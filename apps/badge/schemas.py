@@ -1,7 +1,4 @@
-import uuid
-
 from ninja import ModelSchema
-
 from apps.badge.models import Badge
 
 
