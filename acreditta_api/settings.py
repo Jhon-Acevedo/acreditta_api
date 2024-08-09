@@ -17,7 +17,6 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ SECRET_KEY = 'django-insecure-d8hq#pflpc85kt@1dt8nivniu#r1czzjj$cn_ndku43fqt&ac6
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -73,7 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'acreditta_api.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -87,7 +84,6 @@ DATABASES = {
         "PORT": config("DB_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -107,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -119,7 +114,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -130,22 +124,26 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# USE_S3 = config("USE_S3", default=False, cast=bool)
-# if USE_S3:
-#     AWS_ACCESS_KEY_ID = config("S3_KEY_ID")
-#     AWS_SECRET_ACCESS_KEY = config("S3_SECRET_ACCESS_KEY")
-#     AWS_STORAGE_BUCKET_NAME = config("S3_BUCKET_NAME")
-#     AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
-#     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-#     AWS_S3_FILE_OVERWRITE = False
-#     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
-#     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
-#     STORAGES = {
-#         "default": {
-#             "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-#         },
-#
-#         "staticfiles": {
-#             "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-#         },
-#     }
+USE_S3 = config("USE_S3", default=False, cast=bool)
+if USE_S3:
+    AWS_ACCESS_KEY_ID = config("S3_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = config("S3_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("S3_BUCKET_NAME")
+    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_S3_FILE_OVERWRITE = False
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
+
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
+    }
+
+    # AWS_COGNITO_USER_POOL_ID = config("AWS_COGNITO_USER_POOL_ID")
+    # AWS_COGNITO_APP_CLIENT_ID = config("AWS_COGNITO_APP_CLIENT_ID")
+    # AWS_COGNITO_REGION = config("AWS_COGNITO_REGION")
