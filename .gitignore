@@ -22,3 +22,7 @@ __pycache__/
 *.pyo
 *.pyd
 
+.png
+.jpg
+.jpeg
+.gif
