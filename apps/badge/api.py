@@ -1,17 +1,12 @@
-import boto3
 from botocore.exceptions import ClientError
 from django.contrib.auth.models import User
-from django.forms import Form
 from ninja import NinjaAPI, UploadedFile
 from ninja.errors import HttpError
-from ninja.security import HttpBearer
-from pydantic_core import ValidationError
 from rest_framework.generics import get_object_or_404
 
-from acreditta_api import settings
 from apps.badge.auth import CognitoAuth
 from apps.badge.models import Badge
-from apps.badge.schemas import BadgeSchema, BadgeCreateSchema, AuthRequest
+from apps.badge.schemas import BadgeSchema, BadgeCreateSchema, AuthRequest, UserCreateSchema
 
 app = NinjaAPI(
     version="1.0.0",
@@ -25,20 +20,8 @@ app = NinjaAPI(
 @app.post("/login", tags=["Auth"], auth=None)
 def authenticate_user(request, data: AuthRequest):
     try:
-        data = AuthRequest(**data.dict())
-        client = boto3.client('cognito-idp', region_name=settings.COGNITO_REGION)
-        response = client.initiate_auth(
-            ClientId=settings.COGNITO_CLIENT_ID,
-            AuthFlow='USER_PASSWORD_AUTH',
-            AuthParameters={
-                'USERNAME': data.email,
-                'PASSWORD': data.password,
-            }
-        )
-        return {
-            'access_token': response['AuthenticationResult']['AccessToken'],
-            'refresh_token': response['AuthenticationResult']['RefreshToken'],
-        }
+        token = CognitoAuth.get_token_user(data.email, data.password)
+        return token
     except ClientError as e:
         raise HttpError(401, f"Authentication Error: {str(e)}")
 
@@ -56,12 +39,22 @@ def get_badge(request, badge_id):
 
 @app.post("/badge", response=BadgeSchema, tags=["Badge"], auth=CognitoAuth())
 def create_badge(request, badge: BadgeCreateSchema, image: UploadedFile = None):
-    user = get_object_or_404(User, id=badge.create_by)
+    username = request.auth.get('username')
+    user = get_object_or_404(User, username=username)
     badge = Badge.objects.create(
         name=badge.name,
         description=badge.description,
-        create_by=user,
+        id_user=user,
     )
     if image:
         badge.path_image.save(image.name, image)
     return badge
+
+
+@app.post("/create_user", tags=["Auth"], auth=None)
+def create_user(request, data: UserCreateSchema):
+    try:
+        user = CognitoAuth.create_user(data.email, data.password, data.name)
+        return user
+    except HttpError as e:
+        raise HttpError(400, f"User creation error: {str(e)}")
