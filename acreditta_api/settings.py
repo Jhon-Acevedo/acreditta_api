@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from decouple import config
+from django.http import JsonResponse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,6 +98,9 @@ COGNITO_CLIENT_ID = config('COGNITO_CLIENT_ID')
 COGNITO_REGION = config('COGNITO_REGION')
 COGNITO_ISSUER = f'https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_POOL_ID}'
 COGNITO_JWKS_URL = f'{COGNITO_ISSUER}/.well-known/jwks.json'
+
+AWS_ACCESS_KEY_ID_COGITO = config('AWS_ACCESS_KEY_ID_COGITO')
+AWS_SECRET_ACCESS_KEY_COGNITO = config('AWS_SECRET_ACCESS_KEY_COGITO')
 
 # Storage with Amazon S3
 USE_S3 = config("USE_S3", default=False)
