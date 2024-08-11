@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 from django.conf import settings
 
 
-class CognitoTokenValidator(HttpBearer):
+class CognitoAuth(HttpBearer):
     def authenticate(self, request, token: str):
         try:
             jwks_url = f'https://cognito-idp.{settings.COGNITO_REGION}.amazonaws.com/{settings.COGNITO_POOL_ID}/.well-known/jwks.json'
