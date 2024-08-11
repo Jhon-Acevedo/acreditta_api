@@ -9,7 +9,7 @@ from pydantic_core import ValidationError
 from rest_framework.generics import get_object_or_404
 
 from acreditta_api import settings
-from apps.badge.auth import CognitoTokenValidator
+from apps.badge.auth import CognitoAuth
 from apps.badge.models import Badge
 from apps.badge.schemas import BadgeSchema, BadgeCreateSchema, AuthRequest
 
@@ -18,7 +18,7 @@ app = NinjaAPI(
     urls_namespace="api",
     title="API Insignias",
     description="Create by Jhon-Acevedo",
-    auth=CognitoTokenValidator()
+    auth=CognitoAuth()
 )
 
 
@@ -43,18 +43,18 @@ def authenticate_user(request, data: AuthRequest):
         raise HttpError(401, f"Authentication Error: {str(e)}")
 
 
-@app.get("/badge", response=list[BadgeSchema], tags=["Badge"], auth=CognitoTokenValidator())
+@app.get("/badge", response=list[BadgeSchema], tags=["Badge"], auth=CognitoAuth())
 def list_badges(request):
     return Badge.objects.all()
 
 
-@app.get("/badge/{badge_id}", response=BadgeSchema, tags=["Badge"], auth=CognitoTokenValidator())
+@app.get("/badge/{badge_id}", response=BadgeSchema, tags=["Badge"], auth=None)
 def get_badge(request, badge_id):
     badge = get_object_or_404(Badge, id=badge_id)
     return badge
 
 
-@app.post("/badge", response=BadgeSchema, tags=["Badge"], auth=None)
+@app.post("/badge", response=BadgeSchema, tags=["Badge"], auth=CognitoAuth())
 def create_badge(request, badge: BadgeCreateSchema, image: UploadedFile = None):
     user = get_object_or_404(User, id=badge.create_by)
     badge = Badge.objects.create(
